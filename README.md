@@ -55,9 +55,6 @@ secrets = GCPSecrets(project="my-gcp-project")
 
 # Disable caching (queries GCP on every access)
 secrets = GCPSecrets(cache=False)
-
-# Configure exception handling
-secrets = GCPSecrets(raise_exceptions=True)
 ```
 
 ### Dictionary Operations
@@ -87,6 +84,10 @@ This library uses [Application Default Credentials (ADC)](https://cloud.google.c
 - `gcloud auth application-default login` (for local development)
 - Service account key in `GOOGLE_APPLICATION_CREDENTIALS` environment variable
 - GCP-managed credentials (when running on GCP services)
+
+**Note:** If you don't specify a project and ADC doesn't provide one, a `ValueError` will be raised with instructions. You can either:
+- Provide a project explicitly: `GCPSecrets(project="my-project")`
+- Configure ADC: `gcloud auth application-default login`
 
 ## Features
 

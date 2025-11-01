@@ -1,7 +1,7 @@
 """
-    GCS Secret Manager interface in form of Python Dictonary. Read-only for now
+    GCS Secret Manager interface in form of Python Dictionary. Read-only for now
 
-    ussage with default project:
+    usage with default project:
         secrets = GCPSecrets()
         api_key = secrets['API_KEY']
 
@@ -18,9 +18,9 @@ KEY_ERROR = "Key can be either string or tuple with 2 strings. Got {} with value
 
 class GCPSecrets:
     """
-    GCS Secret Manager interface in form of Python Dictonary. Read-only for now
+    GCS Secret Manager interface in form of Python Dictionary. Read-only for now
 
-    ussage with default project:
+    usage with default project:
         secrets = GCPSecrets()
         api_key = secrets['API_KEY']
 
@@ -30,22 +30,27 @@ class GCPSecrets:
         self,
         project: Optional[str] = None,
         cache: Optional[bool] = True,
-        raise_exceptions: Optional[bool] = True,
     ):
         if cache:
             self.versions = {}
             self.secrets = {}
         else:
-            self.versoins = None
+            self.versions = None
             self.secrets = None
         self.cache = cache
-        self.raise_exceptions = raise_exceptions
 
         if project:
+            if not isinstance(project, str) or not project.strip():
+                raise ValueError("Project must be a non-empty string")
             self.project = project
         else:
             # Get default project_id from the environment
             _, self.project = google.auth.default()
+            if not self.project:
+                raise ValueError(
+                    "No GCP project specified and none found in Application Default Credentials. "
+                    "Please provide a project explicitly or configure ADC with: gcloud auth application-default login"
+                )
 
         self.client = secretmanager.SecretManagerServiceClient()
 
@@ -69,7 +74,7 @@ class GCPSecrets:
         else:
             raise ValueError(KEY_ERROR.format(type(key).__name__, key))
 
-    def _get_adress(self, secret: Union[str, tuple]):
+    def _get_address(self, secret: Union[str, tuple]):
         if isinstance(secret, tuple):
             key = secret[0]
             version = secret[1]
@@ -89,7 +94,7 @@ class GCPSecrets:
         try:
             page_result = self.client.list_secret_versions(request=request)
         except NotFound as exc:
-            raise KeyError from exc
+            raise KeyError(f"Secret '{key}' not found in project '{self.project}'") from exc
 
         active_versions = [
             (i.name.split("/")[-1], i.name, i.create_time)
@@ -120,10 +125,10 @@ class GCPSecrets:
 
         """
         self._check_key_version(key)
-        adress = self._get_adress(key)
+        address = self._get_address(key)
 
         request = secretmanager.AccessSecretVersionRequest(
-            name=adress,
+            name=address,
         )
         response = self.client.access_secret_version(request=request)
 
@@ -148,7 +153,7 @@ class GCPSecrets:
             bool: key exists
         """
         try:
-            _ = self._get_adress(key)
+            _ = self._get_address(key)
             return True
         except KeyError:
             return False

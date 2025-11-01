@@ -36,7 +36,7 @@ def test_content(secret, name, value):
 
     assert secret[name] == value
 
-    # Text existence of adress in cache
+    # Test existence of address in cache
     assert name in secret.versions
-    # Text existence of value in cache
+    # Test existence of value in cache
     assert name in secret.secrets
