@@ -39,7 +39,7 @@ class GCPSecrets:
             self.secrets = None
         self.cache = cache
 
-        if project:
+        if project is not None:
             if not isinstance(project, str) or not project.strip():
                 raise ValueError("Project must be a non-empty string")
             self.project = project

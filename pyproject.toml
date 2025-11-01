@@ -7,7 +7,7 @@ authors = [
 ]
 license = {text = "Apache-2.0"}
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10,<3.15"
 dependencies = [
     "google-cloud-secret-manager>=2.16.2",
 ]
@@ -15,6 +15,8 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-xdist>=3.3.0",
     "black>=23.7.0",
     "pre-commit>=3.3.3",
 ]
@@ -25,7 +27,23 @@ build-backend = "hatchling.build"
 
 [tool.pytest.ini_options]
 pythonpath = "gcpsecrets"
+markers = [
+    "slow: marks tests as slow running",
+]
 filterwarnings = [
     "ignore:Deprecated call to `pkg_resources\\.declare_namespace\\('.*'\\):DeprecationWarning",
     "ignore::DeprecationWarning:google.rpc",
 ]
+
+[tool.coverage.run]
+source = ["gcpsecrets"]
+omit = ["tests/*", "**/__pycache__/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
+show_missing = true
+precision = 2
