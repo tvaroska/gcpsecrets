@@ -55,6 +55,94 @@ secrets = GCPSecrets(project="my-gcp-project")
 
 # Disable caching (queries GCP on every access)
 secrets = GCPSecrets(cache=False)
+
+# Configure cache TTL (default: 300 seconds)
+secrets = GCPSecrets(cache=True, cache_ttl_seconds=600)
+```
+
+## Cache Behavior
+
+⚠️ **Important:** Understanding cache behavior is critical for production use.
+
+### Default Caching
+
+By default, secrets are cached in memory for **5 minutes (300 seconds)**:
+
+```python
+secrets = GCPSecrets()  # cache=True, cache_ttl_seconds=300
+api_key = secrets['API_KEY']  # Fetches from GCP
+api_key = secrets['API_KEY']  # Returns cached value (fast)
+# After 5 minutes, the next access will refresh from GCP
+```
+
+### Cache TTL (Time-To-Live)
+
+You can customize the cache expiration time:
+
+```python
+# Cache for 10 minutes
+secrets = GCPSecrets(cache_ttl_seconds=600)
+
+# Cache for 1 minute (more frequent updates)
+secrets = GCPSecrets(cache_ttl_seconds=60)
+
+# Cache for 1 hour (less API calls, but stale data risk)
+secrets = GCPSecrets(cache_ttl_seconds=3600)
+```
+
+### When to Disable Caching
+
+Disable caching when you need **always-fresh** values:
+
+```python
+# Always fetch from GCP (slower, but guarantees fresh data)
+secrets = GCPSecrets(cache=False)
+```
+
+**Use cache=False when:**
+- Testing secret rotation
+- Running short-lived scripts
+- Secrets change very frequently
+- You need to verify the latest value immediately
+
+### Cache Implications
+
+| Scenario | Recommendation | Example |
+|----------|---------------|---------|
+| **Long-running web app** | Use caching with appropriate TTL | `GCPSecrets(cache_ttl_seconds=300)` |
+| **Background worker** | Use caching with shorter TTL | `GCPSecrets(cache_ttl_seconds=60)` |
+| **Short script** | Disable cache | `GCPSecrets(cache=False)` |
+| **High-security secrets** | Shorter TTL or no cache | `GCPSecrets(cache_ttl_seconds=60)` |
+| **Frequently rotated secrets** | Disable cache | `GCPSecrets(cache=False)` |
+
+### Secret Rotation
+
+When you rotate a secret in GCP:
+- **With caching:** The old value remains cached until TTL expires
+- **Without caching:** The new value is retrieved immediately
+
+Example:
+```python
+secrets = GCPSecrets(cache_ttl_seconds=300)
+api_key = secrets['API_KEY']  # Gets "old-key-123"
+
+# You rotate the secret in GCP Console to "new-key-456"
+api_key = secrets['API_KEY']  # Still returns "old-key-123" (cached)
+
+# Wait 5 minutes (TTL expires)
+api_key = secrets['API_KEY']  # Now returns "new-key-456" (refreshed)
+```
+
+### Memory Considerations
+
+- Each unique secret/version accessed is cached separately
+- Cache grows with the number of unique secrets accessed
+- Cache is per-instance (creating a new instance starts fresh)
+- Consider cache size for applications accessing many secrets
+
+```python
+# For applications with many secrets, use shorter TTL
+secrets = GCPSecrets(cache_ttl_seconds=60)  # Faster cache expiration
 ```
 
 ### Dictionary Operations
