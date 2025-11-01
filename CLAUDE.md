@@ -30,34 +30,37 @@ The `GCPSecrets` class implements Python's dictionary protocol (`__getitem__`, `
 ## Development Commands
 
 ### Dependency Management
-This project uses Poetry for dependency management:
+This project uses uv for dependency management:
 ```bash
 # Install dependencies
-poetry install
+uv sync
 
 # Add new dependency
-poetry add <package>
+uv add <package>
 
 # Add dev dependency
-poetry add --group dev <package>
+uv add --dev <package>
+
+# Install the package in editable mode
+uv pip install -e .
 ```
 
 ### Testing
 ```bash
 # Run all tests
-poetry run pytest
+uv run pytest
 
 # Run specific test file
-poetry run pytest tests/test_values.py
+uv run pytest tests/test_values.py
 
 # Run specific test function
-poetry run pytest tests/test_values.py::test_existence
+uv run pytest tests/test_values.py::test_existence
 
 # Run with verbose output
-poetry run pytest -v
+uv run pytest -v
 
 # Run tests matching a pattern
-poetry run pytest -k "test_content"
+uv run pytest -k "test_content"
 ```
 
 **Test Structure:**
@@ -68,19 +71,19 @@ poetry run pytest -k "test_content"
 ### Code Formatting
 ```bash
 # Format code with black
-poetry run black gcpsecrets tests
+uv run black gcpsecrets tests
 
 # Check formatting without modifying
-poetry run black --check gcpsecrets tests
+uv run black --check gcpsecrets tests
 ```
 
 ### Pre-commit Hooks
 ```bash
 # Install pre-commit hooks
-poetry run pre-commit install
+uv run pre-commit install
 
 # Run hooks manually
-poetry run pre-commit run --all-files
+uv run pre-commit run --all-files
 ```
 
 ## GCP Authentication

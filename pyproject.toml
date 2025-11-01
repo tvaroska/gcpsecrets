@@ -1,24 +1,27 @@
-[tool.poetry]
+[project]
 name = "gcpsecrets"
 version = "0.1.0"
 description = "Package to access GCP Secrets through Dictionary interface"
-authors = ["Boris Tvaroska <tvaroska@google.com>"]
-license = "Apache 2.0"
+authors = [
+    {name = "Boris Tvaroska", email = "tvaroska@google.com"}
+]
+license = {text = "Apache-2.0"}
 readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "google-cloud-secret-manager>=2.16.2",
+]
 
-[tool.poetry.dependencies]
-python = "^3.8"
-google-cloud-secret-manager = "^2.16.2"
-
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^7.4.0"
-black = "^23.7.0"
-pre-commit = "^3.3.3"
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "black>=23.7.0",
+    "pre-commit>=3.3.3",
+]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.pytest.ini_options]
 pythonpath = "gcpsecrets"
