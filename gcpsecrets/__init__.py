@@ -10,6 +10,8 @@ Cache behavior:
     Set cache=False to always fetch fresh values (slower but no stale data).
 """
 
+__version__ = "0.2.0"
+
 import logging
 import re
 from datetime import datetime, timedelta

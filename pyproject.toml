@@ -1,6 +1,6 @@
 [project]
 name = "gcpsecrets"
-version = "0.1.0"
+version = "0.2.0"
 description = "Package to access GCP Secrets through Dictionary interface"
 authors = [
     {name = "Boris Tvaroska", email = "tvaroska@google.com"}
